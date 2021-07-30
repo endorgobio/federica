@@ -2,6 +2,7 @@ import dash
 import dash_core_components as dcc
 from dash.dependencies import Input, Output
 import dash_html_components as html
+import dash_bootstrap_components  as dbc
 import pandas as pd
 import plotly.express as px
 
@@ -22,8 +23,11 @@ external_stylesheets = [
     #     "rel": "stylesheet",
     #     }
 ]
+
+
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets,
-                title = "Federica Cork Analytics!")
+                title="Federica Cork Analytics!")
+server = app.server
 
 markdown_text = '''
 Esta es una herramienta interactiva que permite analizar la relación entre cantidad de materia prima requerida y la

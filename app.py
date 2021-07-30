@@ -2,6 +2,7 @@ import dash
 import dash_core_components as dcc
 from dash.dependencies import Input, Output
 import dash_html_components as html
+import dash_bootstrap_components  as dbc
 import pandas as pd
 import plotly.express as px
 
@@ -12,19 +13,87 @@ data1 = {'% recuperación': [num for num in range(1, 100)],
 df = pd.DataFrame(data1)
 
 
-external_stylesheets = [
-    'https://codepen.io/chriddyp/pen/bWLwgP.css',
-    'dbc.themes.BOOTSTRAP',
+external_stylesheets = [dbc.themes.BOOTSTRAP,
+    #'https://codepen.io/chriddyp/pen/bWLwgP.css',
     'https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap'
-    # {
-    #     "href": "https://fonts.googleapis.com/css2?"
-    #             "family=Lato:wght@400;700&display=swap",
-    #     "rel": "stylesheet",
-    #     }
 ]
+
+
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets,
                 title="Federica Cork Analytics!")
 server = app.server
+
+
+controls = html.Div(
+    [
+        dbc.Card(
+            dbc.CardBody(
+                [
+                    html.H4("Disponibilidad de corcho", className="card-subtitle"),
+                    html.Hr(),
+                    dbc.FormGroup(
+                        [
+                            dbc.Label("Botellas año "),
+                            dbc.Input(id='botellas', value=10000, type='number'),
+                        ],
+                    ),
+                    dbc.FormGroup(
+                        [
+                            dbc.Label("Peso corcho (kg) "),
+                            dbc.Input(id='peso_corcho', value=0.05, type='number'),
+                        ]
+                    ),
+                    dbc.Row([
+                        dbc.Col('Disponibilidad (kg)', md=8),
+                        dbc.Col(id='mp_total', md=4),
+                    ]),
+                ]
+            ),
+        ),
+        dbc.Card(
+            dbc.CardBody(
+                [
+                    #html.H4("Title", className="card-title"),
+                    html.H4("Requerimientos corcho", className="card-subtitle"),
+                    html.Hr(),
+                    dbc.FormGroup(
+                        [
+                            dbc.Label("Tasa aprovechamiento (%)"),
+                            dcc.Slider(
+                                id="aprovechamiento",
+                                min=0,
+                                max=100,
+                                marks={0: str(0),
+                                       100: str(100)},
+                                # marks = {i: str(i) for i in [num for num in range(1, 100) if num % 5 == 0]},
+                                step=1,
+                                value=70,
+                                tooltip={'always_visible': True}
+                            ),
+                        ]
+                    ),
+                    dbc.FormGroup(
+                        [
+                            dbc.Label("Unidades anuales"),
+                            dbc.Input(id='unidades', value=100, type='number'),
+                        ]
+                    ),
+                    dbc.FormGroup(
+                        [
+                            dbc.Label("Corcho por producto (kg)"),
+                            dbc.Input(id='corcho_prod', value=1.3, type='number'),
+                        ]
+                    ),
+                    dbc.Row([
+                        dbc.Col('Requerimiento (kg)', md=8),
+                        dbc.Col(id='requerimiento', md=4),
+                    ]),
+                ]
+            ),
+        ),
+    ]
+)
+
 
 markdown_text = '''
 Esta es una herramienta interactiva que permite analizar la relación entre cantidad de materia prima requerida y la
@@ -40,91 +109,40 @@ El punto de cruce de las lineas permite determinar la `tasa de recuperación` m�
 **¡Experimenta cambiando algunos de los valores!**
 '''
 
-app.layout = html.Div([
-    html.Div(
-        children=[
-            #html.P(children="🥑", className="header-emoji"),
-            #html.Img(src='/assets/favicon.ico', className="header-emoji"),
-            html.H1(
-                children="Federica Cork", className="header-title"
-            ),
-            html.P(
-                children="Herramientas de análisis de la viabilidad técnica"
-                         " Disponibilidad de materia prima - Costo de adquisición",
-                className="header-description",
-            ),
-        ],
-        className="header",
-    ),
-    html.Div([
-        html.Div([
-            html.Div([
-                html.H6("Disponibilidad de corcho"),
-                html.Label('Botellas año'),
-                dcc.Input(id='botellas', value= 10000, type='number'),
-                html.Br(),
-                html.Label('Peso corcho (kg)'),
-                dcc.Input(id='peso_corcho', value=0.05, type='number'),
-                html.Br(),
-                html.Br(),
-                #html.Div(id='mp_total'),
-                html.Div([
-                    html.Label('Disponibilidad (kg)'),
-                    html.Label(id='mp_total')]),
-                html.Br(),
-                ],
-                className="card",
-            ),
-            html.Div([
-                html.H6('Requerimientos corcho'),
-                html.Label('Tasa aprovechamiento (%)'),
-                dcc.Slider(
-                    id="aprovechamiento",
-                    min=0,
-                    max=100,
-                    marks={0: str(0),
-                           100:  str(100)},
-                    #marks = {i: str(i) for i in [num for num in range(1, 100) if num % 5 == 0]},
-                    step=1,
-                    value=70,
-                    tooltip = { 'always_visible': True }
+app.layout = dbc.Container([
+        html.Div(
+            children=[
+                html.H1(
+                    children="Federica Cork", className="header-title"
                 ),
-                html.Br(),
-                html.Label('Unidades anuales'),
-                dcc.Input(id='unidades', value=100, type='number'),
-                html.Br(),
-                html.Label('Corcho por producto (kg)'),
-                dcc.Input(id='corcho_prod', value=1.3, type='number'),
-                html.Br(),
-                html.Br(),
-                #html.Div(),
-                html.Div([
-                    html.Label('Requerimiento (kg)'),
-                    html.Label(id='requerimiento')]),
-                html.Br(),
-                ],
-                className="card",
-            )
-
-        ],  style = {"padding" : 10},
-            className="three columns"
+                html.P(
+                    children="Herramientas de análisis de la viabilidad técnica"
+                             " Disponibilidad de materia prima - Costo de adquisición",
+                    className="header-description",
+                ),
+            ],
+            className="header",
         ),
-
-        html.Div([
-            html.Div(
-                children=dcc.Graph(
-                    id="chart",
-                    #config={"displayModeBar": False},
+        html.Hr(),
+        dbc.Row(
+            [
+                dbc.Col(controls, md=3),
+                dbc.Col(
+                    html.Div([
+                        dcc.Graph(
+                                id="chart",
+                                #config={"displayModeBar": False},
+                                ),
+                        dcc.Markdown(children=markdown_text)
+                    ]),
+                    md=9
                 ),
-                className="card",
-            ),
-            dcc.Markdown(children=markdown_text)
-        ], className="nine columns",
-           style = {"padding" : 10}),
-    ], className="row")
-])
-
-
+            ],
+            align="center",
+        ),
+    ],
+    fluid=True,
+)
 
 
 @app.callback(
