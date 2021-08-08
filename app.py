@@ -6,24 +6,26 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
 
+# Creates data for the initial dataframe
 data1 = {'% recuperación': [num for num in range(1, 100)],
          'Material recuperado': [num for num in range(1, 100)],
          'Material requerido': [100 for num in range(1, 100)]}
 
 df = pd.DataFrame(data1)
 
-
+# Define stylesheets
 external_stylesheets = [dbc.themes.BOOTSTRAP,
     #'https://codepen.io/chriddyp/pen/bWLwgP.css',
     'https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap'
 ]
 
-
+# Create the app
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets,
                 title="Federica Cork Analytics!")
+# needed to run in heroku
 server = app.server
 
-
+# controls to update the inputs
 controls = html.Div(
     [
         dbc.Card(
@@ -94,7 +96,7 @@ controls = html.Div(
     ]
 )
 
-
+# text that explains the app
 markdown_text = '''
 Esta es una herramienta interactiva que permite analizar la relación entre cantidad de materia prima requerida y la
 cantidad disponible en función de la tasa de recuperación esperada para el material. Para ello:
@@ -109,6 +111,7 @@ El punto de cruce de las lineas permite determinar la `tasa de recuperación` m�
 **¡Experimenta cambiando algunos de los valores!**
 '''
 
+# Define the layout
 app.layout = dbc.Container([
         html.Div(
             children=[
@@ -144,7 +147,7 @@ app.layout = dbc.Container([
     fluid=True,
 )
 
-
+# Callback to update availability of raw material
 @app.callback(
     Output(component_id='mp_total', component_property='children'),
     Input(component_id='botellas', component_property='value'),
@@ -156,6 +159,7 @@ def update_totalMP(n_botellas,
     return "{:.1f}".format(total_mp)
 
 
+# Callback to update the requirement of material requirement
 @app.callback(
     Output(component_id='requerimiento', component_property='children'),
     Input(component_id='unidades', component_property='value'),
@@ -169,6 +173,7 @@ def update_requerimiento(n_unidades,
     return "{:.1f}".format(requer)
 
 
+# Callback to update the graph
 @app.callback(
     Output('chart', 'figure'),
     Input(component_id='mp_total', component_property='children'),
